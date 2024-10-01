@@ -29,7 +29,7 @@ class DirectionsFetcher:
             self._current_polyline = directions_response.json()["routes"][0]["overview_polyline"]["points"]
             return directions_response.json()
 
-    def sample_locations(self, interval=200):
+    def sample_locations(self, interval=180):
         # Decode the polyline for the route overview
         decoded_points = polyline.decode(self._current_polyline)
 
@@ -52,8 +52,9 @@ class DirectionsFetcher:
                 sampled_points.append(point2)  # Save the point
                 accumulated_distance = 0  # Reset distance accumulator
 
-        # Add the last point
-        sampled_points.append(decoded_points[-1])
+        # Add the last point if the distance is not very close to the last point
+        if haversine(sampled_points[-1], decoded_points[-1]) > 0.1:
+            sampled_points.append(decoded_points[-1])
         return sampled_points
 
 
@@ -61,8 +62,8 @@ if __name__ == "__main__":
     # Reading api key + cities to pull data for
     google_api_key = open("api_key.txt", "r").read()
     directions_fetcher = DirectionsFetcher(google_api_key)
-    origin = "Iben Gvirol 1+Tel Aviv+Israel"
-    destination = "Beeri 49+Tel Aviv+Israel"
+    origin = "Beeri 49+Tel Aviv+Israel"
+    destination = "Iben Gvirol 1+Tel Aviv+Israel"
     directions = asyncio.run(directions_fetcher.get_directions(origin, destination))
     json.dump(directions, open("directions.json", "w"), indent=4)
     for location in directions_fetcher.sample_locations():
