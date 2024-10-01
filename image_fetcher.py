@@ -6,7 +6,7 @@ import os
 
 
 class ImageFetcher:
-    def __init__(self, api_key, parent_folder):
+    def __init__(self, api_key, parent_folder=os.path.dirname(__name__)):
         self.api_key = api_key
         self.gmaps = googlemaps.Client(key=api_key)
         self.parent_folder = parent_folder
@@ -33,9 +33,8 @@ class ImageFetcher:
 
 if __name__ == "__main__":
     # Reading api key + cities to pull data for
-    parent_folder = os.path.dirname(os.path.dirname(__name__))
-    google_api_key = open(parent_folder + "api_key.txt", "r").read()
+    google_api_key = open("api_key.txt", "r").read()
 
-    image_puller = ImageFetcher(google_api_key, parent_folder)
+    image_puller = ImageFetcher(google_api_key)
     address = "17 Bezalel, Jerusalem, Israel"
     asyncio.run(image_puller.pull_image(address, "test"))
