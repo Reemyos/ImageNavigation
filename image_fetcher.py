@@ -9,6 +9,7 @@ import os
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
+
 class ImageFetcher:
     def __init__(self, api_key, parent_folder=os.path.dirname(__name__)):
         self.api_key = api_key
@@ -17,11 +18,13 @@ class ImageFetcher:
 
     async def fetch_images(self, locations):
         """Takes a list of address strings as an input and returns images from the Google Maps streetview api"""
-        for i in range(len(locations) - 1):
-            # Calculate the angle between the current location and the next location
-            angle = int(self.calculate_azimuth(locations[i], locations[i + 1]))
-            await self.fetch_image(locations[i], f"image_{i}", additional_params={"heading": angle})
-        await self.fetch_image(locations[-1], f"image_{len(locations) - 1}")
+        angles = [int(self.calculate_azimuth(locations[i], locations[i + 1])) for i in range(len(locations) - 1)]
+        async with asyncio.TaskGroup() as g:
+            for i in range(len(locations) - 1):
+                # Calculate the angle between the current location and the next location
+                g.create_task(self.fetch_image(locations[i], f"image_{i}",
+                                               additional_params={"heading": angles[i]}))
+            g.create_task(self.fetch_image(locations[-1], f"image_{len(locations) - 1}"))
 
     async def fetch_image(self, location, name="", additional_params=None):
         """Takes an address string as an input and returns an image from the Google Maps streetview api"""
@@ -66,7 +69,8 @@ class ImageFetcher:
         with open(self.parent_folder + "images/" + name, "wb") as file:
             file.write(response.content)
 
-    def calculate_azimuth(self, location_1, location_2):
+    @staticmethod
+    def calculate_azimuth(location_1, location_2):
         """Calculates the angle between two locations"""
         lat1 = location_1[0]
         lon1 = location_1[1]
