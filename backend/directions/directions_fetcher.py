@@ -66,7 +66,7 @@ class DirectionsFetcher:
 
 if __name__ == "__main__":
     # Reading api key + cities to pull data for
-    google_api_key = open("/Users/reem/Projects/image-navigation/api_key.txt", "r").read()
+    google_api_key = open("/backend/api_key.txt", "r").read()
     directions_fetcher = DirectionsFetcher(google_api_key)
     origin = "Beeri 49+Tel Aviv+Israel"
     destination = "Shlomo Hamelech 78+Tel Aviv+Israel"

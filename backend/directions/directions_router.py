@@ -1,8 +1,9 @@
+# directions_router.py
 from pathlib import Path
 
 from fastapi import APIRouter, Query
 
-from directions import DirectionsFetcher
+from backend.directions import DirectionsFetcher
 
 router = APIRouter()
 

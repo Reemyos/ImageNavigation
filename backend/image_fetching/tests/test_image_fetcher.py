@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from image_fetching import ImageFetcher
+from backend.image_fetching import ImageFetcher
 
 
 @pytest.fixture(scope='module')

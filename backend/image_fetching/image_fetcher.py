@@ -16,17 +16,22 @@ class ImageFetcher:
         self.gmaps = googlemaps.Client(key=api_key)
         self.parent_folder = parent_folder
 
-    async def fetch_images(self, locations: list[str | tuple]):
+    async def fetch_images(self, locations: list[str | tuple]) -> dict[int: bytes]:
         """Takes a list of address strings as an input and returns images from the Google Maps streetview api"""
+        images = {}
         angles = [int(self.calculate_azimuth(locations[i], locations[i + 1])) for i in range(len(locations) - 1)]
         async with asyncio.TaskGroup() as g:
             for i in range(len(locations) - 1):
                 # Calculate the angle between the current location and the next location
-                g.create_task(self.fetch_image(locations[i], f"image_{i}",
-                                               additional_params={"heading": angles[i]}))
-            g.create_task(self.fetch_image(locations[-1], f"image_{len(locations) - 1}"))
+                fetch_image_task = g.create_task(self.fetch_image(locations[i], f"image_{i}",
+                                                                  additional_params={"heading": angles[i]}))
+                fetch_image_task.add_done_callback(lambda x, index=i: images.update({index: x.result()}))
+            fetch_last_image_task = g.create_task(self.fetch_image(locations[-1], f"image_{len(locations) - 1}"))
+            fetch_last_image_task.add_done_callback(lambda x: images.update({len(locations) - 1: x.result()}))
 
-    async def fetch_image(self, location, name="", additional_params=None):
+        return images
+
+    async def fetch_image(self, location, name="", additional_params=None) -> bytes:
         """Takes an address string as an input and returns an image from the Google Maps streetview api"""
         meta_data_base = 'https://maps.googleapis.com/maps/api/streetview/metadata?'
         pic_base = 'https://maps.googleapis.com/maps/api/streetview?'
@@ -64,6 +69,7 @@ class ImageFetcher:
                 return
             image_name = name + ".jpg"
             await asyncio.to_thread(self.save_image, pic_response, image_name)
+            return pic_response.content
 
     def save_image(self, response, name):
         with open(self.parent_folder / "images" / name, "wb") as file:

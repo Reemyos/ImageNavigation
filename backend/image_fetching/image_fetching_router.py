@@ -1,8 +1,9 @@
+# image_fetching_router.py
 from pathlib import Path
 
 from fastapi import APIRouter, Query
 
-from image_fetching import ImageFetcher
+from backend.image_fetching import ImageFetcher
 
 router = APIRouter()
 
@@ -12,5 +13,5 @@ image_fetcher = ImageFetcher(api_key)
 
 
 @router.get("/images/")
-async def get_images(locations: list = Query(...)):
-    await image_fetcher.fetch_images(locations)
+async def get_images(locations: list = Query(...)) -> dict[int, bytes]:
+    return await image_fetcher.fetch_images(locations)

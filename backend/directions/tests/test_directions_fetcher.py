@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from haversine import haversine
 
-from directions import DirectionsFetcher
+from backend.directions import DirectionsFetcher
 
 
 @pytest.fixture(scope='module')
