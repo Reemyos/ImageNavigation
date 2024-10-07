@@ -4,7 +4,6 @@ import math
 from pathlib import Path
 
 import httpx
-import googlemaps
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -13,7 +12,6 @@ logging.basicConfig(level=logging.INFO)
 class ImageFetcher:
     def __init__(self, api_key, parent_folder: Path = Path(__file__).parents[1]):
         self.api_key = api_key
-        self.gmaps = googlemaps.Client(key=api_key)
         self.parent_folder = parent_folder
 
     async def fetch_images(self, locations: list[str | tuple]) -> dict[int: bytes]:

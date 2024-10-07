@@ -1,6 +1,5 @@
 import asyncio
 
-import googlemaps
 import httpx
 import polyline
 from haversine import haversine
@@ -11,7 +10,6 @@ METERS_CONVERSION_CONSTANT = 1000
 class DirectionsFetcher:
     def __init__(self, api_key):
         self.api_key = api_key
-        self.gmaps = googlemaps.Client(key=api_key)
 
     async def get_directions(self, origin, destination):
         """Takes an origin and destination string as an input and returns the directions between them"""

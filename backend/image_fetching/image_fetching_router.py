@@ -3,7 +3,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Query
 
-from backend.image_fetching import ImageFetcher
+from .image_fetcher import ImageFetcher
 
 router = APIRouter()
 

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Query
 
-from backend.directions import DirectionsFetcher
+from .directions_fetcher import DirectionsFetcher
 
 router = APIRouter()
 

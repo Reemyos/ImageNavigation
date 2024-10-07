@@ -1,71 +1,69 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import ImageCarousel from './ImageCarousel'; // Import the ImageCarousel component
+import { LiaAngleRightSolid, LiaAngleLeftSolid } from "react-icons/lia";
+import './App.css'; // We'll style here
 
-const App = () => {
-  const [origin, setOrigin] = useState('');  // Store the origin input
-  const [destination, setDestination] = useState('');  // Store the destination input
-  const [images, setImages] = useState([]);  // To hold the images fetched
-  const [loading, setLoading] = useState(false);  // Loading state
-  const [error, setError] = useState('');  // Error state
+function App() {
+  const [origin, setOrigin] = useState('');
+  const [destination, setDestination] = useState('');
+  const [images, setImages] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Function to handle form submission and fetch images
-  const handleSubmit = async (e) => {
-    e.preventDefault();  // Prevent page reload
-    setLoading(true);
-    setError('');
+  const fetchImages = async () => {
+    const res = await fetch(
+        `http://localhost:8000/image_navigation/?origin=${origin}&destination=${destination}`
+    );
+    const imageArray = await res.json();
+    setImages(imageArray);
+    setCurrentIndex(0); // Reset to the first image
+  };
 
-    try {
-      // Make the API request
-      const response = await axios.get('http://localhost:8000/image_navigation/', {
-        params: {
-          origin: origin,
-          destination: destination
-        }
-      });
-      setImages(response.data);  // Set the images in state
-    } catch (err) {
-      setError('Failed to fetch images. Please check your inputs and try again.');
-    } finally {
-      setLoading(false);  // Reset loading state
-    }
+  const nextImage = () => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  };
+
+  const prevImage = () => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
   };
 
   return (
-    <div>
-      <h1>Image Navigation</h1>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Origin: </label>
-          <input
-            type="text"
-            value={origin}
-            onChange={(e) => setOrigin(e.target.value)}
-            placeholder="Enter origin"
-            required
-          />
-        </div>
-        <div>
-          <label>Destination: </label>
-          <input
-            type="text"
-            value={destination}
-            onChange={(e) => setDestination(e.target.value)}
-            placeholder="Enter destination"
-            required
-          />
-        </div>
-        <button type="submit">Get Images</button>
-      </form>
+    <div className="app-container">
+      <h1 className="header">Image Navigation</h1>
 
-      {/* Loading and error handling */}
-      {loading && <p>Loading images...</p>}
-      {error && <p>{error}</p>}
+      <div className="input-container">
+        <input
+          type="text"
+          placeholder="Origin"
+          value={origin}
+          onChange={(e) => setOrigin(e.target.value)}
+          className="input-field"
+        />
+        <input
+          type="text"
+          placeholder="Destination"
+          value={destination}
+          onChange={(e) => setDestination(e.target.value)}
+          className="input-field"
+        />
+        <button onClick={fetchImages} className="submit-button">Submit</button>
+      </div>
 
-      {/* Display the ImageCarousel when images are available */}
-      {images.length > 0 && !loading && <ImageCarousel images={images} />}
+      {images.length > 0 && (
+        <div className="image-viewer">
+          <button onClick={prevImage} className="nav-button">
+            <LiaAngleLeftSolid></LiaAngleLeftSolid>
+          </button>
+          <img
+            src={`data:image/jpeg;base64,${images[currentIndex]}`}
+            alt="Location"
+            className="image"
+          />
+          <button onClick={nextImage} className="nav-button">
+            <LiaAngleRightSolid></LiaAngleRightSolid>
+          </button>
+        </div>
+      )}
     </div>
   );
-};
+}
 
 export default App;

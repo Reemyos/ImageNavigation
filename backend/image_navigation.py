@@ -4,10 +4,8 @@ import base64
 from fastapi import FastAPI, Query
 from fastapi.responses import JSONResponse
 
-from directions import get_sampled_locations
-from image_fetching import get_images
-from image_fetching import router as image_fetching_router
-from directions import router as directions_router
+from directions.directions_router import get_sampled_locations, router as directions_router
+from image_fetching.image_fetching_router import get_images, router as image_fetching_router
 
 app = FastAPI()
 app.include_router(image_fetching_router)
