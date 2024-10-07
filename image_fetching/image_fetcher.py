@@ -1,17 +1,17 @@
 import asyncio
 import logging
 import math
+from pathlib import Path
 
 import httpx
 import googlemaps
-import os
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
 
 
 class ImageFetcher:
-    def __init__(self, api_key, parent_folder=os.path.dirname(__name__)):
+    def __init__(self, api_key, parent_folder: Path = Path(__file__).parents[1]):
         self.api_key = api_key
         self.gmaps = googlemaps.Client(key=api_key)
         self.parent_folder = parent_folder
@@ -66,7 +66,7 @@ class ImageFetcher:
             await asyncio.to_thread(self.save_image, pic_response, image_name)
 
     def save_image(self, response, name):
-        with open(str(self.parent_folder) + "/images/" + name, "wb") as file:
+        with open(self.parent_folder / "images" / name, "wb") as file:
             file.write(response.content)
 
     @staticmethod

@@ -11,6 +11,6 @@ directions_fetcher = DirectionsFetcher(api_key)
 
 
 @router.get("/sampled_locations/")
-async def get_sampled_locations(origin: str = Query(), destination: str = Query(), interval: int = Query()) \
+async def get_sampled_locations(origin: str = Query(), destination: str = Query(), interval: int = 180) \
         -> list[tuple[float, float]]:
     return await directions_fetcher.get_sampled_locations(origin, destination, interval)

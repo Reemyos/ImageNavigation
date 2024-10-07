@@ -28,7 +28,7 @@ class DirectionsFetcher:
             directions_response = await client.get(directions_base, params=directions_params)
             return directions_response.json()
 
-    async def get_sampled_locations(self, origin, destination, interval=180) -> list[tuple[float, float]]:
+    async def get_sampled_locations(self, origin, destination, interval) -> list[tuple[float, float]]:
         """Takes an origin and destination string as an input and returns sampled locations along the route"""
         directions = await self.get_directions(origin, destination)
         current_ployline = directions["routes"][0]["overview_polyline"]["points"]
@@ -70,6 +70,6 @@ if __name__ == "__main__":
     directions_fetcher = DirectionsFetcher(google_api_key)
     origin = "Beeri 49+Tel Aviv+Israel"
     destination = "Shlomo Hamelech 78+Tel Aviv+Israel"
-    sampled_locations = asyncio.run(directions_fetcher.get_sampled_locations(origin, destination))
+    sampled_locations = asyncio.run(directions_fetcher.get_sampled_locations(origin, destination, 180))
     for location in sampled_locations:
         print(location)
