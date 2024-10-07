@@ -66,10 +66,10 @@ class DirectionsFetcher:
 
 if __name__ == "__main__":
     # Reading api key + cities to pull data for
-    google_api_key = open("../api_key.txt", "r").read()
+    google_api_key = open("/Users/reem/Projects/image-navigation/api_key.txt", "r").read()
     directions_fetcher = DirectionsFetcher(google_api_key)
     origin = "Beeri 49+Tel Aviv+Israel"
-    destination = "Iben Gvirol 1+Tel Aviv+Israel"
+    destination = "Shlomo Hamelech 78+Tel Aviv+Israel"
     sampled_locations = asyncio.run(directions_fetcher.get_sampled_locations(origin, destination))
     for location in sampled_locations:
         print(location)

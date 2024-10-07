@@ -12,5 +12,5 @@ image_fetcher = ImageFetcher(api_key)
 
 
 @router.get("/images/")
-async def get_images(locations: list[str | float] = Query(...)):
+async def get_images(locations: list = Query(...)):
     await image_fetcher.fetch_images(locations)

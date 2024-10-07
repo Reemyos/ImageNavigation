@@ -66,7 +66,7 @@ class ImageFetcher:
             await asyncio.to_thread(self.save_image, pic_response, image_name)
 
     def save_image(self, response, name):
-        with open(self.parent_folder + "images/" + name, "wb") as file:
+        with open(str(self.parent_folder) + "/images/" + name, "wb") as file:
             file.write(response.content)
 
     @staticmethod
