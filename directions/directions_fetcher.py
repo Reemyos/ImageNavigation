@@ -1,17 +1,17 @@
 import asyncio
-import json
 
 import googlemaps
 import httpx
 import polyline
 from haversine import haversine
 
+METERS_CONVERSION_CONSTANT = 1000
+
 
 class DirectionsFetcher:
     def __init__(self, api_key):
         self.api_key = api_key
         self.gmaps = googlemaps.Client(key=api_key)
-        self._current_polyline = None
 
     async def get_directions(self, origin, destination):
         """Takes an origin and destination string as an input and returns the directions between them"""
@@ -26,12 +26,18 @@ class DirectionsFetcher:
         # Requesting data
         async with httpx.AsyncClient() as client:
             directions_response = await client.get(directions_base, params=directions_params)
-            self._current_polyline = directions_response.json()["routes"][0]["overview_polyline"]["points"]
             return directions_response.json()
 
-    def sample_locations(self, interval=180):
+    async def get_sampled_locations(self, origin, destination, interval=180) -> list[tuple[float, float]]:
+        """Takes an origin and destination string as an input and returns sampled locations along the route"""
+        directions = await self.get_directions(origin, destination)
+        current_ployline = directions["routes"][0]["overview_polyline"]["points"]
+        return self._sample_locations(current_ployline, interval)
+
+    @staticmethod
+    def _sample_locations(current_polyline, interval):
         # Decode the polyline for the route overview
-        decoded_points = polyline.decode(self._current_polyline)
+        decoded_points = polyline.decode(current_polyline)
 
         # Initialize variables
         sampled_points = [decoded_points[0]]  # Start with the first point
@@ -42,7 +48,7 @@ class DirectionsFetcher:
             # Calculate the distance between consecutive points
             point1 = decoded_points[i - 1]
             point2 = decoded_points[i]
-            segment_distance = haversine(point1, point2) * 1000  # Convert to meters
+            segment_distance = haversine(point1, point2) * METERS_CONVERSION_CONSTANT
 
             # Accumulate distance
             accumulated_distance += segment_distance
@@ -60,11 +66,10 @@ class DirectionsFetcher:
 
 if __name__ == "__main__":
     # Reading api key + cities to pull data for
-    google_api_key = open("api_key.txt", "r").read()
+    google_api_key = open("../api_key.txt", "r").read()
     directions_fetcher = DirectionsFetcher(google_api_key)
     origin = "Beeri 49+Tel Aviv+Israel"
     destination = "Iben Gvirol 1+Tel Aviv+Israel"
-    directions = asyncio.run(directions_fetcher.get_directions(origin, destination))
-    json.dump(directions, open("directions.json", "w"), indent=4)
-    for location in directions_fetcher.sample_locations():
+    sampled_locations = asyncio.run(directions_fetcher.get_sampled_locations(origin, destination))
+    for location in sampled_locations:
         print(location)

@@ -16,7 +16,7 @@ class ImageFetcher:
         self.gmaps = googlemaps.Client(key=api_key)
         self.parent_folder = parent_folder
 
-    async def fetch_images(self, locations):
+    async def fetch_images(self, locations: list[str | tuple]):
         """Takes a list of address strings as an input and returns images from the Google Maps streetview api"""
         angles = [int(self.calculate_azimuth(locations[i], locations[i + 1])) for i in range(len(locations) - 1)]
         async with asyncio.TaskGroup() as g:
@@ -89,7 +89,7 @@ class ImageFetcher:
 
 if __name__ == "__main__":
     # Reading api key + cities to pull data for
-    google_api_key = open("api_key.txt", "r").read()
+    google_api_key = open("../api_key.txt", "r").read()
 
     image_puller = ImageFetcher(google_api_key)
     address = "1 Beeri, Tel Aviv, Israel"
