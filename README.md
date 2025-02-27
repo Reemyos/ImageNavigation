@@ -25,3 +25,5 @@ docker-compose up
 This will start the backend and the frontend of the application. The frontend
 will be available at `http://localhost:3000` and the backend will be available
 at `http://localhost:8000`. Have fun navigating!
+
+![](img.png)
