@@ -3,7 +3,7 @@ from pathlib import Path
 import pytest
 from haversine import haversine
 
-from backend.directions import DirectionsFetcher
+from backend.directions.directions_fetcher import DirectionsFetcher
 
 
 @pytest.fixture(scope='module')
@@ -15,8 +15,8 @@ def directions_fetcher():
 
 @pytest.mark.asyncio
 async def test_directions_request(directions_fetcher):
-    origin = "Shlomo Hamelech 78+Tel Aviv+Israel"
-    destination = "Beeri 49+Tel Aviv+Israel"
+    origin = "Iben Gvirol 20+Tel Aviv+Israel"
+    destination = "Dizengoff 2+Tel Aviv+Israel"
     directions = await directions_fetcher.get_directions(origin, destination)
     assert "routes" in directions
     assert "overview_polyline" in directions["routes"][0]
