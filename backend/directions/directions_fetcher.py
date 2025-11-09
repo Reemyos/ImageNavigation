@@ -60,14 +60,3 @@ class DirectionsFetcher:
         if haversine(sampled_points[-1], decoded_points[-1]) > 0.1:
             sampled_points.append(decoded_points[-1])
         return sampled_points
-
-
-if __name__ == "__main__":
-    # Reading api key + cities to pull data for
-    google_api_key = open("/backend/api_key.txt", "r").read()
-    directions_fetcher = DirectionsFetcher(google_api_key)
-    origin = "Beeri 49+Tel Aviv+Israel"
-    destination = "Shlomo Hamelech 78+Tel Aviv+Israel"
-    sampled_locations = asyncio.run(directions_fetcher.get_sampled_locations(origin, destination, 180))
-    for location in sampled_locations:
-        print(location)
