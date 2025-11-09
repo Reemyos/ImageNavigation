@@ -1,5 +1,3 @@
-import asyncio
-
 import httpx
 import polyline
 from haversine import haversine
